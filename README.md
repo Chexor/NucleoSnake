@@ -12,26 +12,41 @@ This is a clean, modular implementation of the classic Snake game, designed as a
 - **Refined Game Over screen** with high-contrast inverted elements.
 - Clean separation between game logic and hardware drivers.
 
-## Hardware
+## Hardware Setup & Wiring
 
-- **Board:** STM32F091RC Nucleo
-- **Display:** SSD1306 OLED (128x64 pixels)
-- **OLED SCL:** D15 / PB8
-- **OLED SDA:** D14 / PB9
-- **SW1 (Left):** PA1
-- **SW4 (Right):** PC1
-- **B1 (Start/Restart):** PC13 (Blue User Button)
+This project uses the STM32F091RC Nucleo-64 board combined with a custom IoT Extension Shield.
 
-## Build
+### Pinout
+| Component | Pin / Port | Function |
+| :--- | :--- | :--- |
+| **SSD1306 OLED** | D15 / PB8 | I2C1_SCL |
+| **SSD1306 OLED** | D14 / PB9 | I2C1_SDA |
+| **SW1 (Left)** | PA1 | GPIO Input (Pull-up) |
+| **SW4 (Right)** | PC1 | GPIO Input (Pull-up) |
+| **B1 (Action)** | PC13 | Blue User Button (Start/Restart) |
+| **Power** | 3V3 & GND | 3.3V logic level |
 
-Open `NucleoSnake.uvprojx` in Keil uVision and build target `Nucleo_One`.
+### Board Configuration
+- **Power:** The Nucleo is powered via the ST-LINK USB connection.
+- **Jumpers:**
+  - Ensure `CN2` jumpers are fitted for onboard ST-LINK programming.
+  - Ensure `JP6` (IDD) is fitted, otherwise the target MCU will not receive power.
 
-Command-line build:
+## Reproduction Checklist
+
+1. **Open the project:** Open `NucleoSnake.uvprojx` in Keil uVision.
+2. **Build:** Select target `Nucleo_One` and compile the firmware.
+3. **Flash:** Download the compiled binary to the Nucleo board via ST-LINK.
+4. **Play:** 
+   - The OLED should display the animated NucleoSnake start screen.
+   - Press the Blue User Button (`B1`) to start.
+   - Use `SW1` and `SW4` to steer the snake.
+
+Command-line build alternative:
 ```bat
 UV4.exe -b "NucleoSnake.uvprojx" -t "Nucleo_One"
 ```
-
-Build outputs and local Keil state are ignored by `.gitignore`, so the repository only contains source files and project metadata needed to rebuild the firmware.
+*(Build outputs and local Keil state are ignored by `.gitignore`.)*
 
 ## Project Structure
 
@@ -45,24 +60,20 @@ Build outputs and local Keil state are ignored by `.gitignore`, so the repositor
 
 ## Technical Notes
 
+- **Direct Register Access:** Peripherals (I2C, GPIO, SysTick) are controlled via direct CMSIS register manipulation (no HAL) in accordance with the IoT1 course conventions.
+- **I2C Routing:** PB8 and PB9 are used because they are mapped to the D15/D14 Arduino headers where the OLED display is connected.
 - **Decoupled Engine:** The game logic is entirely separate from the hardware, using a `GameState` structure for easy state management.
 - **Framebuffer Rendering:** Uses a 1KB local framebuffer (`8 pages x 128 columns`) flushed to the OLED.
 - **Pseudo-Randomness:** Food placement is driven by a 16-bit LFSR (Linear Feedback Shift Register).
+- **Timing & Input Queuing:** `SysTick` provides a 1ms timebase for consistent movement speed and debounce handling. Input queues prevent rapid button presses from causing illegal snake turns (e.g., turning back on itself).
 - **English Standardized:** Code, comments, and architecture have been refactored to follow professional English conventions.
-- **Direct Register Access:** Peripherals are controlled via direct CMSIS register manipulation (no HAL) to keep the binary lightweight.
 
-## Controls
+## Reference Documents
 
-- `B1`: Start game / Restart after Game Over.
-- `SW1`: Turn left relative to current direction.
-- `SW4`: Turn right relative to current direction.
-
-## Methods Used
-
-- **Modularity:** Separation of concerns ensures that hardware drivers can be updated without affecting game logic.
-- **Encapsulation:** Global variables are minimized; the game state is passed as a pointer to the engine.
-- **Timing:** `SysTick` provides a 1ms timebase for consistent movement speed and debounce handling.
-- **Input Queuing:** Prevents rapid button presses from causing illegal snake turns (e.g., turning back on itself).
+- [STM32 Nucleo-64 Boards User Manual (UM1724)](https://www.st.com/resource/en/user_manual/um1724-stm32-nucleo64-boards-mb1136-stmicroelectronics.pdf)
+- [STM32F091xC Datasheet](https://www.st.com/resource/en/datasheet/stm32f091rc.pdf)
+- [STM32F0x1 Reference Manual (RM0091)](https://www.st.com/resource/en/reference_manual/rm0091-stm32f0x1stm32f0x2stm32f0x8-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
+- [SSD1306 OLED Controller Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
 
 ## Disclaimer
 
