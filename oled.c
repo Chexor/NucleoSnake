@@ -22,6 +22,7 @@
 #define OLED_DATA_CONTROL_BYTE      0x40
 #undef START_CHARACTER
 #define START_CHARACTER             0x00
+#define FONT_CHARACTER_COUNT        (sizeof(font6x8) / CHARACTER_WIDTH)
 
 /**
  * @brief Sends a single command byte to the SSD1306 controller.
@@ -116,17 +117,17 @@ void OLED_StringToPage(const char* text, uint8_t page, bool fillWithBlanks, bool
     uint8_t i2cData[OLED_WIDTH + 1];
     i2cData[0] = OLED_DATA_CONTROL_BYTE;
     uint8_t col = 0;
-    uint8_t textLen = strlen(text);
     
     /* 5x7 font + 1px spacing = 6px stride */
     uint8_t stride = CHARACTER_WIDTH + 1;
 
     memset(&i2cData[1], invert ? 0xFF : 0x00, OLED_WIDTH);
 
-    for (uint8_t i = 0; i < textLen && (col + stride) <= OLED_WIDTH; i++) {
+    for (uint16_t i = 0; text[i] != '\0' && (col + stride) <= OLED_WIDTH; i++) {
         if (text[i] == '\r' || text[i] == '\n') break;
         
-        uint32_t charIdx = (uint32_t)text[i] - START_CHARACTER;
+        uint32_t charIdx = (uint32_t)(uint8_t)text[i] - START_CHARACTER;
+        if (charIdx >= FONT_CHARACTER_COUNT) charIdx = (uint32_t)'?' - START_CHARACTER;
         uint8_t charData[CHARACTER_WIDTH];
         memcpy(charData, &font6x8[charIdx * CHARACTER_WIDTH], CHARACTER_WIDTH);
         

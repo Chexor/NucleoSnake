@@ -52,7 +52,6 @@ void System_Init(void) {
     while(!(RCC->CR & RCC_CR_PLLRDY));
 
     /* Select PLL as System Clock */
-    RCC->CFGR |= RCC_CR_PLLON; /* Set SW bits to PLL */
     RCC->CFGR = (RCC->CFGR & ~RCC_CFGR_SW) | RCC_CFGR_SW_PLL;
     while((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_PLL);
     
