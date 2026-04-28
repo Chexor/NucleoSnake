@@ -2,7 +2,7 @@
 
 Snake game voor de STM32F091RC Nucleo met het DM-OLED096-636 / SSD1306 OLED-display op I2C1.
 
-De game toont een klassieke Snake op een 128x64 OLED-scherm. De slang beweegt automatisch vooruit. Met `SW1` draai je links ten opzichte van de huidige richting en met `SW4` draai je rechts. Na een botsing verschijnt een game-over scherm en kan het spel opnieuw gestart worden met de blauwe Nucleo-knop `B1`.
+De game toont een klassieke Snake op een 128x64 OLED-scherm. De slang beweegt automatisch vooruit. Met `SW1` draai je links ten opzichte van de huidige richting en met `SW4` draai je rechts. Na een botsing verschijnt een game-over scherm met scorebord en kan het spel opnieuw gestart worden met de blauwe Nucleo-knop `B1`.
 
 ## Hardware
 
@@ -66,6 +66,7 @@ De toestand van de game wordt opgeslagen in enkele globale variabelen in `main.c
 - `snakeY[]`: y-posities van alle slangsegmenten.
 - `snakeLength`: huidige lengte van de slang.
 - `foodX` en `foodY`: positie van het voedsel.
+- `score`: aantal opgegeten voedselpunten.
 - `direction`: huidige bewegingsrichting.
 - `nextDirection`: richting die bij de volgende stap gebruikt wordt.
 - `gameOver`: geeft aan of het spel gestopt is door een botsing.
@@ -170,6 +171,8 @@ Daarna controleert de code of de nieuwe positie buiten het speelveld valt. Dat i
 
 Vervolgens wordt gecontroleerd of de kop op het voedsel staat. Als dat zo is, wordt `grow` true en wordt de slang een segment langer.
 
+Wanneer de slang groeit, verhoogt de code ook `score`. De score is dus gelijk aan het aantal keren dat de slang voedsel opgegeten heeft.
+
 Daarna controleert de code of de nieuwe koppositie een bestaand slangsegment raakt. Een botsing met de eigen body is game-over. De staartpositie is een uitzondering als de slang niet groeit, want die staart schuift in dezelfde stap weg.
 
 Ten slotte schuiven alle segmenten een plaats op:
@@ -221,6 +224,7 @@ Als `gameOver` false is:
 Als `gameOver` true is:
 
 - `ShowGameOver()` toont de game-over tekst.
+- Het game-over scherm toont ook `SCORE: ...`.
 - `UserButtonActive()` controleert of B1 ingedrukt wordt.
 - Bij B1 wordt `ResetGame()` uitgevoerd en start de game opnieuw.
 
@@ -259,7 +263,8 @@ Na flashen moet het volgende zichtbaar zijn:
 - De slang start ongeveer in het midden en beweegt naar rechts.
 - Voedsel verschijnt als een kleine open cel.
 - De slang wordt langer wanneer ze voedsel raakt.
+- De score stijgt telkens wanneer de slang voedsel raakt.
 - `SW1` draait de slang links.
 - `SW4` draait de slang rechts.
-- Botsing met border of eigen lichaam geeft `GAME OVER`.
+- Botsing met border of eigen lichaam geeft `GAME OVER` met scorebord.
 - `B1` start het spel opnieuw.

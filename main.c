@@ -32,6 +32,7 @@ static uint8_t snakeY[MAX_SNAKE_LENGTH];
 static uint8_t snakeLength = 0;
 static uint8_t foodX = 0;
 static uint8_t foodY = 0;
+static uint16_t score = 0;
 static Direction direction = DIR_RIGHT;
 static Direction nextDirection = DIR_RIGHT;
 static bool gameOver = false;
@@ -148,6 +149,7 @@ static void ResetGame(void)
     snakeY[4] = 8;
     direction = DIR_RIGHT;
     nextDirection = DIR_RIGHT;
+    score = 0;
     gameOver = false;
     randomState = (uint16_t)(ticks ^ 0xACE1U);
     PlaceFood();
@@ -232,7 +234,10 @@ static void MoveSnake(void)
     }
 
     if(grow && (snakeLength < MAX_SNAKE_LENGTH))
+    {
         snakeLength++;
+        score++;
+    }
 
     for(index = (int16_t)snakeLength - 1; index > 0; index--)
     {
@@ -263,10 +268,17 @@ static void RenderGame(void)
 
 static void ShowGameOver(void)
 {
+    char scoreText[] = "    SCORE: 000";
+
+    scoreText[11] = (char)('0' + ((score / 100U) % 10U));
+    scoreText[12] = (char)('0' + ((score / 10U) % 10U));
+    scoreText[13] = (char)('0' + (score % 10U));
+
     OLED_FillScreen(0x00);
     OLED_StringToPage("      SNAKE", 2, true);
     OLED_StringToPage("    GAME OVER", 3, true);
-    OLED_StringToPage("  B1 = opnieuw", 5, true);
+    OLED_StringToPage(scoreText, 4, true);
+    OLED_StringToPage("  B1 = opnieuw", 6, true);
 }
 
 int main(void)
