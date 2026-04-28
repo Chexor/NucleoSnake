@@ -4,14 +4,6 @@ Snake game for the STM32F091RC Nucleo board with an SSD1306 OLED display.
 
 This is a clean, modular implementation of the classic Snake game, designed as a side project for the IoT1 course at VIVES Kortrijk.
 
-## Features
-
-- Classic Snake gameplay on a 128x64 OLED display.
-- Animated start screen with a small snake tongue flick.
-- Relative left/right controls using shield buttons.
-- **Refined Game Over screen** with high-contrast inverted elements.
-- Clean separation between game logic and hardware drivers.
-
 ## Hardware Setup & Wiring
 
 This project uses the STM32F091RC Nucleo-64 board combined with the **VIVES IoT Extension Shield V2** (custom educational shield).
