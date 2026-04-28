@@ -59,6 +59,16 @@ UV4.exe -b "NucleoSnake.uvprojx" -t "Nucleo_One"
 - `TURN_DEBOUNCE_MS` avoids duplicate turns from button bounce.
 - `turnQueued` prevents multiple turns before the snake has moved one step.
 
+## Methods Used
+
+- Direct register access is used instead of HAL to keep the firmware small and close to the IoT1 course style.
+- A framebuffer is used so the game can draw a complete frame in RAM before sending it to the OLED.
+- Polling is used for button input because the game loop is simple and does not need interrupt-driven controls.
+- SysTick timing is used for movement, delays and animation because it provides a simple 1 ms time base.
+- Relative turning is used so only two buttons are needed: left and right from the snake's current direction.
+- Debounce and a turn queue are used to prevent one physical button press from causing multiple turns.
+- A small LFSR is used for food placement because it is lightweight and does not require extra library support.
+
 ## Runtime Behavior
 
 On startup, the OLED shows the Snake start screen. Press `B1` to begin. The snake starts near the middle and moves to the right. Eating food increases the score and length. Hitting the border or the snake body shows `GAME OVER` with the final score.
