@@ -11,7 +11,22 @@ DebugConfig/
 *.map
 *.o
 *.d
+*.crf
+*.lst
+*.iex
+*.sct
+*.tra
 
-# Keil local UI state
+# Keil local user/debug state
+*.uvoptx
 *.uvguix.*
+*.uvgui.*
 *.uvmpw
+
+# Editor / OS noise
+.vs/
+.vscode/
+*.swp
+*.tmp
+Thumbs.db
+Desktop.ini
