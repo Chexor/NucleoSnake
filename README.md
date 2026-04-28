@@ -64,6 +64,10 @@ Build outputs and local Keil state are ignored by `.gitignore`, so the repositor
 - **Timing:** `SysTick` provides a 1ms timebase for consistent movement speed and debounce handling.
 - **Input Queuing:** Prevents rapid button presses from causing illegal snake turns (e.g., turning back on itself).
 
+## Disclaimer
+
+This project was built with assistance from GPT-5.5 in OpenCode.
+
 ## License
 
 This project is released under the MIT License. See `LICENSE` for details.
