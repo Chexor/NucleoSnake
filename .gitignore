@@ -1,0 +1,17 @@
+# Keil / MDK build outputs
+Objects/
+Listings/
+DebugConfig/
+*.axf
+*.hex
+*.htm
+*.build_log.htm
+*.lnp
+*.dep
+*.map
+*.o
+*.d
+
+# Keil local UI state
+*.uvguix.*
+*.uvmpw
