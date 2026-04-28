@@ -1,13 +1,14 @@
+#ifndef BUTTONS_H
+#define BUTTONS_H
+
 #include "stm32f091xc.h"
 #include "stdbool.h"
 
-#if !defined(BUTTONS_DEFINED)
-	#define BUTTONS_DEFINED
-	
-	void InitButtons(void);
-	bool SW1Active(void);	
-	bool SW2Active(void);
-	bool SW3Active(void);
-	bool SW4Active(void);
-	bool UserButtonActive(void);
-#endif
+void Buttons_Init(void);
+bool SW1_IsActive(void);
+bool SW2_IsActive(void);
+bool SW3_IsActive(void);
+bool SW4_IsActive(void);
+bool UserButton_IsActive(void);
+
+#endif // BUTTONS_H

@@ -390,24 +390,9 @@
               <FilePath>./main.c</FilePath>
             </File>
             <File>
-              <FileName>ad.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\ad.c</FilePath>
-            </File>
-            <File>
               <FileName>buttons.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\buttons.c</FilePath>
-            </File>
-            <File>
-              <FileName>leds.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\leds.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart2.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\usart2.c</FilePath>
             </File>
             <File>
               <FileName>i2c1.c</FileName>
@@ -419,35 +404,25 @@
               <FileType>1</FileType>
               <FilePath>.\oled.c</FilePath>
             </File>
+            <File>
+              <FileName>snake_engine.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\snake_engine.c</FilePath>
+            </File>
+            <File>
+              <FileName>system_utils.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system_utils.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
           <GroupName>Headers</GroupName>
           <Files>
             <File>
-              <FileName>main.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>./main.h</FilePath>
-            </File>
-            <File>
-              <FileName>ad.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\ad.h</FilePath>
-            </File>
-            <File>
               <FileName>buttons.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\buttons.h</FilePath>
-            </File>
-            <File>
-              <FileName>leds.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\leds.h</FilePath>
-            </File>
-            <File>
-              <FileName>usart2.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\usart2.h</FilePath>
             </File>
             <File>
               <FileName>i2c1.h</FileName>
@@ -463,6 +438,16 @@
               <FileName>font6x8.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\font6x8.h</FilePath>
+            </File>
+            <File>
+              <FileName>snake_engine.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\snake_engine.h</FilePath>
+            </File>
+            <File>
+              <FileName>system_utils.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system_utils.h</FilePath>
             </File>
           </Files>
         </Group>
