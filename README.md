@@ -14,17 +14,17 @@ This is a clean, modular implementation of the classic Snake game, designed as a
 
 ## Hardware Setup & Wiring
 
-This project uses the STM32F091RC Nucleo-64 board combined with a custom IoT Extension Shield.
+This project uses the STM32F091RC Nucleo-64 board combined with the **VIVES IoT Extension Shield V2** (custom educational shield).
 
 ### Pinout
 | Component | Pin / Port | Function |
 | :--- | :--- | :--- |
-| **SSD1306 OLED** | D15 / PB8 | I2C1_SCL |
-| **SSD1306 OLED** | D14 / PB9 | I2C1_SDA |
-| **SW1 (Left)** | PA1 | GPIO Input (Pull-up) |
-| **SW4 (Right)** | PC1 | GPIO Input (Pull-up) |
-| **B1 (Action)** | PC13 | Blue User Button (Start/Restart) |
-| **Power** | 3V3 & GND | 3.3V logic level |
+| **SSD1306 OLED** | D15 / PB8 | I2C1_SCL (Shield I2C header) |
+| **SSD1306 OLED** | D14 / PB9 | I2C1_SDA (Shield I2C header) |
+| **SW1 (Left)** | PA1 | Shield Button 1 (Pull-up) |
+| **SW4 (Right)** | PC1 | Shield Button 4 (Pull-up) |
+| **B1 (Action)** | PC13 | Nucleo Blue User Button (Start/Restart) |
+| **Power** | 3V3 & GND | 3.3V logic level (Shield power header) |
 
 ### Board Configuration
 - **Power:** The Nucleo is powered via the ST-LINK USB connection.
@@ -74,6 +74,7 @@ UV4.exe -b "NucleoSnake.uvprojx" -t "Nucleo_One"
 - [STM32F091xC Datasheet](https://www.st.com/resource/en/datasheet/stm32f091rc.pdf)
 - [STM32F0x1 Reference Manual (RM0091)](https://www.st.com/resource/en/reference_manual/rm0091-stm32f0x1stm32f0x2stm32f0x8-advanced-armbased-32bit-mcus-stmicroelectronics.pdf)
 - [SSD1306 OLED Controller Datasheet](https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf)
+- *Note: SW1 and SW4 are specific to the custom VIVES IoT Extension Shield V2 used in the course. If building this without the shield, connect standard pushbuttons to PA1 and PC1 with external pull-up resistors.*
 
 ## Disclaimer
 
