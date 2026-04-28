@@ -2,7 +2,7 @@
 
 Snake game voor de STM32F091RC Nucleo met het DM-OLED096-636 / SSD1306 OLED-display op I2C1.
 
-De game toont een klassieke Snake op een 128x64 OLED-scherm. De slang beweegt automatisch vooruit. Met `SW1` draai je links ten opzichte van de huidige richting en met `SW4` draai je rechts. Na een botsing verschijnt een game-over scherm met scorebord en kan het spel opnieuw gestart worden met de blauwe Nucleo-knop `B1`.
+De game toont een klassieke Snake op een 128x64 OLED-scherm. Bij het opstarten verschijnt eerst een startscherm dat wacht op `B1`. Daarna beweegt de slang automatisch vooruit. Met `SW1` draai je links ten opzichte van de huidige richting en met `SW4` draai je rechts. Na een botsing verschijnt een game-over scherm met scorebord en kan het spel opnieuw gestart worden met de blauwe Nucleo-knop `B1`.
 
 ## Hardware
 
@@ -20,7 +20,7 @@ Controleer voor het testen dat `JP5` op `U5V` staat, `JP6` geplaatst is, en de `
 
 - `SW1`: draai 90 graden naar links
 - `SW4`: draai 90 graden naar rechts
-- `B1`: start opnieuw na game-over
+- `B1`: start vanaf het startscherm en start opnieuw na game-over
 
 De besturing is relatief. Dat betekent dat `SW1` niet altijd naar links op het scherm beweegt, maar links draait ten opzichte van waar de slang nu naartoe beweegt. Als de slang bijvoorbeeld omhoog beweegt, dan draait `SW1` naar links. Als de slang naar rechts beweegt, dan draait `SW1` naar boven.
 
@@ -55,6 +55,9 @@ Belangrijke constanten in `main.c`:
 - `FIELD_W`: het speelveld is 31 cellen breed.
 - `FIELD_H`: het speelveld is 15 cellen hoog.
 - `GAME_STEP_MS`: de slang zet elke 140 ms een stap.
+- `TURN_DEBOUNCE_MS`: een knopdruk wordt pas na 120 ms opnieuw aanvaard.
+- `START_TONGUE_STEP_MS`: wachttijd tussen twee tong-animaties op het startscherm.
+- `START_TONGUE_FLICK_MS`: korte wachttijd tussen de twee snelle tong-flicks.
 
 De border staat op de buitenste pixelrand van het OLED-scherm. De cellen beginnen op offset `2,2`, zodat de slang en het voedsel niet over de border getekend worden.
 
@@ -69,6 +72,8 @@ De toestand van de game wordt opgeslagen in enkele globale variabelen in `main.c
 - `score`: aantal opgegeten voedselpunten.
 - `direction`: huidige bewegingsrichting.
 - `nextDirection`: richting die bij de volgende stap gebruikt wordt.
+- `turnQueued`: blokkeert extra turns tot de slang effectief een stap gezet heeft.
+- `lastTurnTick`: tijdstip van de laatste aanvaarde turn.
 - `gameOver`: geeft aan of het spel gestopt is door een botsing.
 - `randomState`: eenvoudige pseudo-random toestand voor voedselplaatsing.
 
@@ -116,16 +121,25 @@ De knopfuncties staan in `buttons.c`.
 
 Voor Snake worden alleen `SW1Active()`, `SW4Active()` en `UserButtonActive()` gebruikt.
 
-De functie `ReadInput()` gebruikt flankdetectie. Daardoor draait de slang maar een keer per druk, ook als de knop langer ingedrukt blijft:
+De functie `ReadInput()` gebruikt drie beveiligingen tegen dubbele turns:
+
+- Flankdetectie: een knop telt alleen op het moment dat hij van los naar ingedrukt gaat.
+- Debounce: na een geldige turn worden nieuwe turns 120 ms genegeerd.
+- Turn queue: per Snake-stap mag maar een turn klaarstaan.
+
+Daardoor draait de slang maar een keer per druk, ook als de knop mechanisch stuitert of langer ingedrukt blijft:
 
 ```c
+if(turnQueued || ((ticks - lastTurnTick) < TURN_DEBOUNCE_MS))
+    return;
+
 if(sw1IsActive && !sw1WasActive)
     nextDirection = TurnLeft(nextDirection);
 else if(sw4IsActive && !sw4WasActive)
     nextDirection = TurnRight(nextDirection);
 ```
 
-Daarna worden `sw1WasActive` en `sw4WasActive` bijgewerkt voor de volgende lus.
+Na een geldige turn wordt `turnQueued` true. In `MoveSnake()` wordt `turnQueued` terug false nadat de slang een stap gezet heeft.
 
 ## Richtingen
 
@@ -210,8 +224,10 @@ Als er na 512 pogingen geen vrije plaats gevonden wordt, valt de code terug naar
 2. `InitButtons()` initialiseert de knoppen.
 3. `InitI2C1()` initialiseert I2C1.
 4. `OLED_Init()` initialiseert het SSD1306-display.
-5. `ResetGame()` zet Snake in de starttoestand.
-6. `RenderGame()` tekent het eerste frame.
+5. `ShowStartScreen()` toont het Engelstalige startscherm met eenvoudige ASCII-art.
+6. `WaitForStartButton()` animeert de tong met twee korte `-----<` flicks en wacht tot B1 ingedrukt en terug losgelaten wordt.
+7. `ResetGame()` zet Snake in de starttoestand.
+8. `RenderGame()` tekent het eerste frame.
 
 Daarna blijft de code in een oneindige `while(1)` lus.
 
@@ -259,6 +275,8 @@ De border zelf is visueel getekend op de buitenste pixels. Logisch gezien wordt 
 
 Na flashen moet het volgende zichtbaar zijn:
 
+- Bij het opstarten verschijnt een startscherm met ASCII-art, bewegende tong en `B1:Start`.
+- De slang begint pas te bewegen nadat B1 ingedrukt en losgelaten is.
 - Er staat een rechthoekige border rond het OLED-scherm.
 - De slang start ongeveer in het midden en beweegt naar rechts.
 - Voedsel verschijnt als een kleine open cel.

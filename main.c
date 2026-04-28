@@ -15,6 +15,9 @@
 #define FIELD_H                     ((OLED_HEIGHT - (2U * FIELD_Y_OFFSET)) / CELL_SIZE)
 #define MAX_SNAKE_LENGTH            160U
 #define GAME_STEP_MS                140U
+#define TURN_DEBOUNCE_MS            120U
+#define START_TONGUE_STEP_MS        600U
+#define START_TONGUE_FLICK_MS       120U
 
 typedef enum
 {
@@ -35,6 +38,8 @@ static uint8_t foodY = 0;
 static uint16_t score = 0;
 static Direction direction = DIR_RIGHT;
 static Direction nextDirection = DIR_RIGHT;
+static bool turnQueued = false;
+static uint32_t lastTurnTick = 0;
 static bool gameOver = false;
 static uint16_t randomState = 0xACE1U;
 
@@ -149,6 +154,8 @@ static void ResetGame(void)
     snakeY[4] = 8;
     direction = DIR_RIGHT;
     nextDirection = DIR_RIGHT;
+    turnQueued = false;
+    lastTurnTick = ticks - TURN_DEBOUNCE_MS;
     score = 0;
     gameOver = false;
     randomState = (uint16_t)(ticks ^ 0xACE1U);
@@ -186,10 +193,25 @@ static void ReadInput(void)
     bool sw1IsActive = SW1Active();
     bool sw4IsActive = SW4Active();
 
+    if(turnQueued || ((ticks - lastTurnTick) < TURN_DEBOUNCE_MS))
+    {
+        sw1WasActive = sw1IsActive;
+        sw4WasActive = sw4IsActive;
+        return;
+    }
+
     if(sw1IsActive && !sw1WasActive)
+    {
         nextDirection = TurnLeft(nextDirection);
+        turnQueued = true;
+        lastTurnTick = ticks;
+    }
     else if(sw4IsActive && !sw4WasActive)
+    {
         nextDirection = TurnRight(nextDirection);
+        turnQueued = true;
+        lastTurnTick = ticks;
+    }
 
     sw1WasActive = sw1IsActive;
     sw4WasActive = sw4IsActive;
@@ -250,6 +272,8 @@ static void MoveSnake(void)
 
     if(grow)
         PlaceFood();
+
+    turnQueued = false;
 }
 
 static void RenderGame(void)
@@ -278,7 +302,74 @@ static void ShowGameOver(void)
     OLED_StringToPage("      SNAKE", 2, true);
     OLED_StringToPage("    GAME OVER", 3, true);
     OLED_StringToPage(scoreText, 4, true);
-    OLED_StringToPage("  B1 = opnieuw", 6, true);
+    OLED_StringToPage("  B1 = Restart", 6, true);
+}
+
+static void DrawStartTongue(bool tongueExtended)
+{
+    if(tongueExtended)
+        OLED_StringToPage("    SNAKE   \\  -----<", 2, true);
+    else
+        OLED_StringToPage("    SNAKE   \\  ---<", 2, true);
+}
+
+static void ShowStartScreen(void)
+{
+    OLED_FillScreen(0x00);
+    OLED_StringToPage("             ____", 0, true);
+    OLED_StringToPage("   NUCLEO   / . .\\", 1, true);
+    DrawStartTongue(false);
+    OLED_StringToPage("             \\  /", 3, true);
+    OLED_StringToPage("   __________/ /", 4, true);
+    OLED_StringToPage("-=:___________/", 5, true);
+    OLED_StringToPage("SW1:L  SW4:R", 6, true);
+    OLED_StringToPage("B1:Start", 7, true);
+}
+
+static void WaitForStartButton(void)
+{
+    uint32_t lastTongueTick = ticks;
+    uint16_t tongueDelay = START_TONGUE_STEP_MS;
+    uint8_t tongueStep = 0;
+
+    while(!UserButtonActive())
+    {
+        if((ticks - lastTongueTick) >= tongueDelay)
+        {
+            lastTongueTick = ticks;
+
+            if(tongueStep == 0U)
+            {
+                DrawStartTongue(true);
+                tongueDelay = START_TONGUE_FLICK_MS;
+                tongueStep = 1U;
+            }
+            else if(tongueStep == 1U)
+            {
+                DrawStartTongue(false);
+                tongueDelay = START_TONGUE_FLICK_MS;
+                tongueStep = 2U;
+            }
+            else if(tongueStep == 2U)
+            {
+                DrawStartTongue(true);
+                tongueDelay = START_TONGUE_FLICK_MS;
+                tongueStep = 3U;
+            }
+            else
+            {
+                DrawStartTongue(false);
+                tongueDelay = START_TONGUE_STEP_MS;
+                tongueStep = 0U;
+            }
+        }
+    }
+
+    WaitForMs(200);
+
+    while(UserButtonActive())
+    {
+    }
 }
 
 int main(void)
@@ -291,6 +382,8 @@ int main(void)
     InitI2C1();
     WaitForMs(100);
     OLED_Init();
+    ShowStartScreen();
+    WaitForStartButton();
     ResetGame();
     RenderGame();
     lastStepTick = ticks;
