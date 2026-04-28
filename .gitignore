@@ -30,3 +30,8 @@ DebugConfig/
 *.tmp
 Thumbs.db
 Desktop.ini
+
+# AI agent instructions / local assistant context
+AGENTS.md
+GEMINI.md
+CLAUDE.md
