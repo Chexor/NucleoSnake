@@ -113,10 +113,10 @@ static void ShowGameOver(void) {
     scoreText[13] = (char)('0' + (game.score % 10U));
 
     OLED_FillScreen(0x00);
-    OLED_StringToPage("      SNAKE", 1, true, false);
-    OLED_StringToPage(":::::::::::::::::::::", 2, true, true);
-    OLED_StringToPage("      GAME OVER      ", 3, true, true);
-    OLED_StringToPage(":::::::::::::::::::::", 4, true, true);
+    OLED_StringToPage(":::::::::::::::::::::", 1, true, true);
+    OLED_StringToPage("      GAME OVER      ", 2, true, true);
+    OLED_StringToPage(":::::::::::::::::::::", 3, true, true);
+    OLED_StringToPage("", 4, true, false);
     OLED_StringToPage(scoreText, 5, true, false);
     OLED_StringToPage("    B1 to RESTART    ", 7, true, false);
 }
@@ -139,8 +139,8 @@ static void ShowStartScreen(void) {
     OLED_StringToPage("             \\  /", 3, true, false);
     OLED_StringToPage("   __________/ /", 4, true, false);
     OLED_StringToPage("-=:___________/", 5, true, false);
-    OLED_StringToPage("SW1:L  SW4:R", 6, true, false);
-    OLED_StringToPage("B1:Start", 7, true, false);
+    OLED_StringToPage("", 6, true, false);
+    OLED_StringToPage("SW1:L SW4:R  B1:Start", 7, true, false);
 }
 
 /**

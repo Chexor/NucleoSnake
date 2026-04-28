@@ -31,6 +31,8 @@ Command-line build:
 UV4.exe -b "NucleoSnake.uvprojx" -t "Nucleo_One"
 ```
 
+Build outputs and local Keil state are ignored by `.gitignore`, so the repository only contains source files and project metadata needed to rebuild the firmware.
+
 ## Project Structure
 
 - `main.c`: Coordinates game flow, user interface, and high-level rendering.
@@ -61,3 +63,7 @@ UV4.exe -b "NucleoSnake.uvprojx" -t "Nucleo_One"
 - **Encapsulation:** Global variables are minimized; the game state is passed as a pointer to the engine.
 - **Timing:** `SysTick` provides a 1ms timebase for consistent movement speed and debounce handling.
 - **Input Queuing:** Prevents rapid button presses from causing illegal snake turns (e.g., turning back on itself).
+
+## License
+
+This project is released under the MIT License. See `LICENSE` for details.
